@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>threejs</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        html,body {margin: 0;}
+        canvas {display: block;}
+    </style>
+</head>
+<body>
+    <script src="three.js"></script>
+    <script src="trackballControls.js"></script>
+    <script>
+        var scene = new THREE.Scene();// 创建场景
+        scene.background = new THREE.Color(0xffffff);
+        
+        var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);// 创建相机
+        var renderer = new THREE.WebGLRenderer();// 创建渲染器
+        renderer.setSize(window.innerWidth, window.innerHeight);// 设置渲染大小
+        document.body.appendChild(renderer.domElement);// 将渲染的元素添加到body中
+
+        renderer.shadowMap.enabled = true; // 需要渲染器开启shadowMap
+        var light = new THREE.DirectionalLight(0xffff00, 1);
+        light.position.set(0,1,0);
+        scene.add(light);
+        light.castShadow = true;// 添加对象是否被渲染到阴影贴图中
+
+        var geometry = new THREE.BoxGeometry(1,1,1);// 创建立方体
+        // var material = new THREE.MeshBasicMaterial({color: 0x00fff0});// 创建材质
+        // 创建贴图材质
+
+        // 创建一张纹理贴图引用在所以面
+        // var texture = new THREE.TextureLoader().load('./3.JPG');
+        // var material = new THREE.MeshBasicMaterial({map: texture});
+        // var cube = new THREE.Mesh(geometry, material);
+
+        // 分别创建6个纹理
+        // var texture1 = new THREE.TextureLoader().load('./1.JPG');
+        // var texture2 = new THREE.TextureLoader().load('./2.JPG');
+        // var texture3 = new THREE.TextureLoader().load('./3.JPG');
+        // var texture4 = new THREE.TextureLoader().load('./4.JPG');
+        // var texture5 = new THREE.TextureLoader().load('./5.JPG');
+        // var texture6 = new THREE.TextureLoader().load('./6.JPG');
+        // var material1 = new THREE.MeshBasicMaterial({map: texture1});
+        // var material2 = new THREE.MeshBasicMaterial({map: texture2});
+        // var material3 = new THREE.MeshBasicMaterial({map: texture3});
+        // var material4 = new THREE.MeshBasicMaterial({map: texture4});
+        // var material5 = new THREE.MeshBasicMaterial({map: texture5});
+        // var material6 = new THREE.MeshBasicMaterial({map: texture6});
+        // 将纹理放在数组中
+        // var materials = [material1,material2,material3,material4,material5,material6]
+        // var cube = new THREE.Mesh(geometry, materials);
+        
+        // 利用uv映射把一张地图映射到立体图形中
+        var texture = new THREE.TextureLoader().load('./all.jpg');
+        var material = new THREE.MeshBasicMaterial({map: texture});
+        // 创建6个子图
+        var material1= [new THREE.Vector2(0, .666), new THREE.Vector2(.333, .666), new THREE.Vector2(.333, 1), new THREE.Vector2(0, 1)];
+        var material2= [new THREE.Vector2(.333, .666), new THREE.Vector2(.666, .666), new THREE.Vector2(.666, 1), new THREE.Vector2(.333, 1)];
+        var material3= [new THREE.Vector2(0, .333), new THREE.Vector2(.333, .333), new THREE.Vector2(.333, .666), new THREE.Vector2(0, .666)];
+        var material4= [new THREE.Vector2(.333, .333), new THREE.Vector2(.666, .333), new THREE.Vector2(.666, .666), new THREE.Vector2(.333, .666)];
+        var material5= [new THREE.Vector2(0, 0), new THREE.Vector2(.333, 0), new THREE.Vector2(.333, .333), new THREE.Vector2(0, .333)];
+        var material6= [new THREE.Vector2(.333, 0), new THREE.Vector2(.666, 0), new THREE.Vector2(.666, .333), new THREE.Vector2(.333, .333)];
+        // 映射在立方体各个面上
+        geometry.faceVertexUvs[0] = [];
+        geometry.faceVertexUvs[0][0] = [material1[0],material1[1],material1[3]];
+        geometry.faceVertexUvs[0][1] = [material1[1],material1[2],material1[3]];
+        
+        geometry.faceVertexUvs[0][2] = [material2[0],material2[1],material2[3]];
+        geometry.faceVertexUvs[0][3] = [material2[1],material2[2],material2[3]];
+        
+        geometry.faceVertexUvs[0][4] = [material3[0],material3[1],material3[3]];
+        geometry.faceVertexUvs[0][5] = [material3[1],material3[2],material3[3]];
+        
+        geometry.faceVertexUvs[0][6] = [material4[0],material4[1],material4[3]];
+        geometry.faceVertexUvs[0][7] = [material4[1],material4[2],material4[3]];
+        
+        geometry.faceVertexUvs[0][8] = [material5[0],material5[1],material5[3]];
+        geometry.faceVertexUvs[0][9] = [material5[1],material5[2],material5[3]];
+        
+        geometry.faceVertexUvs[0][10] = [material6[0],material6[1],material6[3]];
+        geometry.faceVertexUvs[0][11] = [material6[1],material6[2],material6[3]];
+
+        var cube = new THREE.Mesh(geometry, material);// 网格需要包含创建的立方体和材
+        cube.castShadow = true;// 物体是否可渲染到阴影贴图中
+        scene.add(cube);// 将创建的立方体放置场景中
+        
+        camera.position.set(0, 0, 5);// 设置相机的位置
+
+        // 创建一个平面接受阴影投射
+        var planeGeometry = new THREE.PlaneGeometry(20, 20, 30, 30);
+        var planeMaterial = new THREE.MeshStandardMaterial({color: 0x00fff0});// 
+        var plane = new THREE.Mesh(planeGeometry, planeMaterial);
+        plane.rotateX(-Math.PI / 2);
+        plane.position.set(0, -1, 0);
+        plane.receiveShadow = true;// 材质是否接收阴影
+        scene.add(plane);
+
+        // 创建控制器
+        var controls = new THREE.TrackballControls(camera, renderer.domElement)
+        controls.rotateSpeed = 1.0;
+        controls.zoomSpeed = 1.2;
+        controls.panSpeed = 0.8;
+        controls.addEventListener( 'change', render );
+
+        window.addEventListener('resize', onWindowResize, false);
+        function onWindowResize() {
+            // 重设置宽高比
+            var aspect = window.innerWidth / window.innerHeight;
+            camera.aspect = aspect;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.render(scene, camera);
+        }
+        
+        // 定义动画函数，使立方体动起来
+        function animate () {
+            requestAnimationFrame(animate);// 动画函数
+            cube.rotation.x += 0.01;
+            cube.rotation.y += 0.01;
+            controls.update();// 一定要有这个控制器才有效果
+            render();
+        }
+
+        function render () {
+            renderer.render(scene, camera);// 渲染器渲染场景和相机
+        }
+        animate();
+    </script>
+</body>
+</html>
