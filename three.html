@@ -108,8 +108,7 @@
         window.addEventListener('resize', onWindowResize, false);
         function onWindowResize() {
             // 重设置宽高比
-            var aspect = window.innerWidth / window.innerHeight;
-            camera.aspect = aspect;
+            camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.render(scene, camera);
